@@ -1,0 +1,5 @@
+spring:
+  redis:
+    host: localhost
+  application:
+    name: user-service
