@@ -1,6 +1,8 @@
 package com.lineyou.UserService.net;
 
 
+import com.lineyou.UserService.channel.Listener;
+import com.lineyou.UserService.entity.InnerMsg;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
@@ -32,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Slf4j
 @Component
-public class NetClient {
+public class NetClient implements Listener {
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -47,7 +49,7 @@ public class NetClient {
      */
     private boolean isManualClose = false;
 
-    @Value("${remote.server.host:0.0.0.0}")
+    @Value("${remote.server.host:119.45.158.51}")
     private String remoteHost;
 
     @Value("${remote.server.port:1883}")
@@ -99,7 +101,9 @@ public class NetClient {
                         }
                     });
 
+
             channel = b.connect(remoteHost, remotePort).sync().channel();
+
 
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -159,4 +163,10 @@ public class NetClient {
         return msgId.getAndIncrement();
     }
 
+    @Override
+    public void action(InnerMsg msg) {
+        if (msg.getType() == InnerMsg.InnerMsgEnum.reconnect) {
+            start();
+        }
+    }
 }

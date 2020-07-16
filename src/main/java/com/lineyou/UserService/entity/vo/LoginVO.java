@@ -12,6 +12,7 @@ import java.util.Set;
 public class LoginVO {
 
     private String mobile;
+    private String token;
     private String nickname;
     private Set<String> friends;
     private Set<String> subTopics;
