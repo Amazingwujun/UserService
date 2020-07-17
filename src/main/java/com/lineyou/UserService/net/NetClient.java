@@ -2,6 +2,7 @@ package com.lineyou.UserService.net;
 
 
 import com.lineyou.UserService.channel.Listener;
+import com.lineyou.UserService.constant.Topic;
 import com.lineyou.UserService.entity.InnerMsg;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -11,9 +12,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.mqtt.MqttDecoder;
-import io.netty.handler.codec.mqtt.MqttEncoder;
-import io.netty.handler.codec.mqtt.MqttMessage;
+import io.netty.handler.codec.mqtt.*;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -49,7 +48,7 @@ public class NetClient implements Listener {
      */
     private boolean isManualClose = false;
 
-    @Value("${remote.server.host:119.45.158.51}")
+    @Value("${remote.server.host:0.0.0.0}")
     private String remoteHost;
 
     @Value("${remote.server.port:1883}")
@@ -103,7 +102,6 @@ public class NetClient implements Listener {
 
 
             channel = b.connect(remoteHost, remotePort).sync().channel();
-
 
             channel.closeFuture().sync();
         } catch (Exception e) {
@@ -165,6 +163,14 @@ public class NetClient implements Listener {
 
     @Override
     public void action(InnerMsg msg) {
+        if (msg.getType() == InnerMsg.InnerMsgEnum.sign_in) {
+            MqttSubscribeMessage build = MqttMessageBuilders.subscribe()
+                    .messageId(genMsgId())
+                    .addSubscription(MqttQoS.AT_MOST_ONCE, Topic.USER_STATE_CHANGE)
+                    .build();
+            send(build);
+        }
+
         if (msg.getType() == InnerMsg.InnerMsgEnum.reconnect) {
             start();
         }

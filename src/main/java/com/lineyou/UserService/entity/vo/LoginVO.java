@@ -14,6 +14,6 @@ public class LoginVO {
     private String mobile;
     private String token;
     private String nickname;
-    private Set<String> friends;
+    private Set<FriendVO> friends;
     private Set<String> subTopics;
 }

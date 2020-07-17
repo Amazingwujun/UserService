@@ -3,8 +3,8 @@ package com.lineyou.UserService.controller;
 import com.lineyou.UserService.constant.ResponseCode;
 import com.lineyou.UserService.entity.Response;
 import com.lineyou.UserService.entity.po.User;
+import com.lineyou.UserService.entity.vo.FriendVO;
 import com.lineyou.UserService.service.IFriendService;
-import com.sun.corba.se.impl.oa.toa.TOA;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +40,7 @@ public class FriendController {
      * @return
      */
     @GetMapping("search/{mobile:1[1-9][0-9]{9}}")
-    public Response<User> search(@PathVariable String mobile) {
+    public Response<FriendVO> search(@PathVariable String mobile) {
         return friendService.search(mobile);
     }
 
@@ -54,6 +54,6 @@ public class FriendController {
             return Response.failure(ResponseCode.TOKEN_NOT_MATCH_ERR);
         }
 
-        return friendService.makeFriend(principal,mobile);
+        return friendService.makeFriend(principal, mobile);
     }
 }

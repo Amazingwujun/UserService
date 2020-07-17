@@ -4,6 +4,7 @@ import com.lineyou.UserService.constant.ResponseCode;
 import com.lineyou.UserService.entity.Response;
 import com.lineyou.UserService.entity.dto.SignUpUserDTO;
 import com.lineyou.UserService.entity.po.User;
+import com.lineyou.UserService.entity.vo.FriendVO;
 import com.lineyou.UserService.entity.vo.LoginVO;
 import com.lineyou.UserService.service.IUserService;
 import com.lineyou.UserService.utils.BeanUtils;
@@ -84,14 +85,14 @@ public class UserServiceImpl implements IUserService {
 
         //密码校验
         @SuppressWarnings("rawtypes") Map entries = redisTemplate.opsForHash().entries(userKey);
-        @SuppressWarnings("unchecked") User u = BeanUtils.map2bean(entries, User.class);
+        @SuppressWarnings("unchecked") User u = BeanUtils.map2bean(entries, String.class, User.class);
         if (!passwordMatch(u.getPassword(), password)) {
             return Response.failure(ResponseCode.LOGIN_ERR);
         }
 
         //登入成功，置入 token
         String token = genToken(mobile);
-        redisTemplate.opsForValue().set(signInPrefix + mobile,token, Duration.ofDays(3));
+        redisTemplate.opsForValue().set(signInPrefix + mobile, token, Duration.ofDays(3));
 
         //response vo
         LoginVO loginVO = new LoginVO();
@@ -112,8 +113,15 @@ public class UserServiceImpl implements IUserService {
         loginVO.setSubTopics(topics);
 
         //好友获取
+        Set<FriendVO> friendVOSet = new HashSet<>();
         Set<String> friends = redisTemplate.opsForSet().members(friendPrefix + mobile);
-        loginVO.setFriends(friends);
+        for (String friend : friends) {
+            Map objectMap = redisTemplate.opsForHash().entries(userPrefix + friend);
+            FriendVO friendVo = BeanUtils.map2bean(objectMap,String.class, FriendVO.class);
+            friendVo.setOnline(Objects.equals("true",objectMap.get("online")));
+            friendVOSet.add(friendVo);
+        }
+        loginVO.setFriends(friendVOSet);
 
         return Response.success(loginVO);
     }

@@ -7,7 +7,9 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.mqtt.MqttConnectMessage;
 import io.netty.handler.codec.mqtt.MqttMessage;
+import io.netty.handler.codec.mqtt.MqttMessageBuilders;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +44,15 @@ public class BizHandler extends SimpleChannelInboundHandler<MqttMessage> {
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-
+        //登入
+        MqttConnectMessage build = MqttMessageBuilders.connect()
+                .cleanSession(false)
+                .clientId("user-service")
+                .keepAlive(60)
+                .password("user.getPassword().getBytes()".getBytes())
+                .username("user-service")
+                .build();
+        ctx.writeAndFlush(build);
     }
 
     @Override

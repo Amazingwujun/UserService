@@ -3,3 +3,6 @@ spring:
     host: localhost
   application:
     name: user-service
+
+server:
+  port: 80

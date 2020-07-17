@@ -2,6 +2,7 @@ package com.lineyou.UserService.service;
 
 import com.lineyou.UserService.entity.Response;
 import com.lineyou.UserService.entity.po.User;
+import com.lineyou.UserService.entity.vo.FriendVO;
 
 /**
  * @author Jun
@@ -10,7 +11,7 @@ import com.lineyou.UserService.entity.po.User;
 public interface IFriendService {
 
 
-    Response<User> search(String mobile);
+    Response<FriendVO> search(String mobile);
 
     Response<Void> makeFriend(String principal, String mobile);
 }

@@ -2,7 +2,7 @@ package com.lineyou.UserService.service.impl;
 
 import com.lineyou.UserService.constant.ResponseCode;
 import com.lineyou.UserService.entity.Response;
-import com.lineyou.UserService.entity.po.User;
+import com.lineyou.UserService.entity.vo.FriendVO;
 import com.lineyou.UserService.net.NetClient;
 import com.lineyou.UserService.service.IFriendService;
 import com.lineyou.UserService.utils.BeanUtils;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 好友服务实现
@@ -38,14 +39,14 @@ public class FriendServiceImpl implements IFriendService {
     }
 
     @Override
-    public Response<User> search(String mobile) {
+    public Response<FriendVO> search(String mobile) {
         Map entries = redisTemplate.opsForHash().entries(userPrefix + mobile);
         if (CollectionUtils.isEmpty(entries)) {
             return Response.failure(ResponseCode.INFO_NOT_FOUND_ERR.getCode(), "用户不存在");
         }
 
-        User r = BeanUtils.map2bean(entries, User.class);
-        r.setPassword(null);
+        FriendVO r = BeanUtils.map2bean(entries, String.class, FriendVO.class);
+        r.setOnline(Objects.equals("true", entries.get("online")));
         return Response.success(r);
     }
 

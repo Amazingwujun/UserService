@@ -57,6 +57,46 @@ public class BeanUtils {
     }
 
     /**
+     * 用于转换指定类型的字段
+     *
+     * @param map    待转换map
+     * @param target 转换字段所属 class
+     * @param clazz  目标对象 class
+     */
+    public static <R, F> R map2bean(Map<String, Object> map, Class<F> target, Class<R> clazz) {
+        Assert.notEmpty(map, "待转换map不能为空");
+
+        try {
+            R r = clazz.newInstance();
+
+            BeanInfo beanInfo = Introspector.getBeanInfo(clazz);
+            for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+                if (Objects.equals("class", propertyDescriptor.getName())) {
+                    continue;
+                }
+
+                String key = propertyDescriptor.getName();
+
+                if (map.containsKey(key)) {
+                    Object val = map.get(key);
+
+                    if (propertyDescriptor.getPropertyType().isAssignableFrom(target)) {
+                        propertyDescriptor.getWriteMethod().invoke(r, val);
+                    }
+                }
+            }
+
+            return r;
+        } catch (IntrospectionException |
+                IllegalAccessException |
+                InstantiationException |
+                InvocationTargetException e) {
+            throw new BeanException(e.getMessage(), e);
+        }
+    }
+
+
+    /**
      * map 转 javabean
      *
      * @param map   待装换key-value Map
@@ -105,8 +145,8 @@ public class BeanUtils {
     /**
      * javabean之间属性复制
      *
-     * @param source     数据源bean
-     * @param clazz 目标类型
+     * @param source 数据源bean
+     * @param clazz  目标类型
      * @return 属性复制后的对象
      */
     public static <R, U> R bean2bean(U source, Class<R> clazz) {
