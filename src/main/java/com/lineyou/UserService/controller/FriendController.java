@@ -25,7 +25,7 @@ public class FriendController {
 
     private StringRedisTemplate redisTemplate;
 
-    @Value("${biz.sign-in-prefix:lineyou:sign-in:")
+    @Value("${biz.sign-in-prefix:lineyou:sign-in:}")
     private String signInPrefix;
 
     public FriendController(IFriendService friendService, StringRedisTemplate redisTemplate) {

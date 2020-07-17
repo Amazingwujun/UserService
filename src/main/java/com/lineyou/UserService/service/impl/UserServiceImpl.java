@@ -43,7 +43,7 @@ public class UserServiceImpl implements IUserService {
     @Value("${biz.user-prefix:lineyou:user:}")
     private String userPrefix;
 
-    @Value("${biz.sign-in-prefix:lineyou:sign-in:")
+    @Value("${biz.sign-in-prefix:lineyou:sign-in:}")
     private String signInPrefix;
 
     @Value("${biz.friend-prefix:lineyou:friend:}")
